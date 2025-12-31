@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: inputsync
-Implementation-Version: 1.0.0
-Minecraft: 1.21.10
-Fabric-Loader: 0.18.3
-
