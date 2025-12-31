@@ -1,2 +1,2 @@
 # inputsync
-A small mod designed to sync inputs between minecraft instances
+A small mod designed to sync inputs between minecraft instances for 1.21.10
