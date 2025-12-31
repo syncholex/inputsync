@@ -60,18 +60,18 @@ public final class NetworkClient {
     private static GLFWKeyCallbackI prevKeyCb;
     private static GLFWCharCallbackI prevCharCb;
 
-    /** UI cursor tracking (scaled GUI coords) */
+    /** UI cursor tracking */
     private static volatile double uiX = 0.0, uiY = 0.0;
     private static volatile int uiMods = 0;
 
-    /** Hotbar selected slot reflection cache */
+    /** Hotbar slot selection */
     private static volatile Field invSelectedSlotField = null;
 
     /** Follower edge tracking */
     private static volatile boolean lastAttackHeld = false;
     private static volatile boolean lastUseHeld = false;
 
-    /** Chat text field cache */
+    /** Chat text */
     private static volatile Field chatTextFieldField = null;
     private static volatile boolean chatFieldSearched = false;
     private static volatile String chatFieldOwner = null;
@@ -507,8 +507,6 @@ public final class NetworkClient {
             Object tf = getChatTextField(mc);
             if (tf == null) return;
 
-            // HARD RULE: always SET full buffer, never append.
-            // STRICT: only use setText(String) if it exists; otherwise fall back to direct String field set.
             Method setText = findSetText(tf.getClass());
             if (setText != null) {
                 setText.setAccessible(true);
@@ -577,7 +575,6 @@ public final class NetworkClient {
         return null;
     }
 
-    /** Prefer a method literally named getText() */
     private static Method findGetText(Class<?> c) {
         try { return c.getMethod("getText"); } catch (Throwable ignored) {}
         try { return c.getDeclaredMethod("getText"); } catch (Throwable ignored) {}
@@ -599,20 +596,13 @@ public final class NetworkClient {
         return null;
     }
 
-    /**
-     * STRICT: only accept setText(String).
-     * Any other (String)->void method may APPEND/INSERT and causes //s//se//ser... behavior.
-     */
     private static Method findSetText(Class<?> c) {
         try { return c.getMethod("setText", String.class); } catch (Throwable ignored) {}
         try { return c.getDeclaredMethod("setText", String.class); } catch (Throwable ignored) {}
         return null;
     }
 
-    /**
-     * Resolve the String field in the text field widget that is most likely the typed text.
-     * SAFE strategy: prefer a field named "text" or "value"; otherwise pick the longest current String.
-     */
+
     private static Field resolveTextValueField(Object tf) {
         try {
             Class<?> c = tf.getClass();
@@ -667,9 +657,6 @@ public final class NetworkClient {
         }
     }
 
-    /**
-     * Only use real cursor/selection methods if present. DO NOT touch fields.
-     */
     private static void forceCursorToEndIfPossible(Object tf, int end) {
         try {
             Method setCursor = findIntVoidMethod(tf.getClass(), "setCursor", "setCursorPos", "setCursorPosition");
